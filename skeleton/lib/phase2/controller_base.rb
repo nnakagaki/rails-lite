@@ -28,9 +28,6 @@ module Phase2
     # Set the response's content type to the given type.
     # Raise an error if the developer tries to double render.
     def render_content(content, type)
-      p "Im here"
-      p content
-      p type
       unless @already_built_response
         @res.content_type = type
         @res.body = content

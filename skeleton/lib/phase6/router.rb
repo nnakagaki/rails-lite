@@ -18,10 +18,14 @@ module Phase6
     # use pattern to pull out route params (save for later?)
     # instantiate controller and call controller action
     def run(req, res)
-      p route_params = {"id" => @pattern.match(req.path)[:id]}
+      matches = @pattern.match(req.path)
+      route_params = {}
+
+      matches.names.each do |name|
+        route_params[name] = matches[name]
+      end
+
       @controller = @controller_class.new(req, res, route_params)
-      p "after making controller"
-      @controller.params
       @controller.invoke_action(@action_name)
     end
   end
@@ -41,6 +45,7 @@ module Phase6
     # evaluate the proc in the context of the instance
     # for syntactic sugar :)
     def draw(&proc)
+      self.instance_eval(&proc)
     end
 
     # make each of these methods that

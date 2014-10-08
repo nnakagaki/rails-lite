@@ -13,8 +13,6 @@ describe "the symphony of things" do
       end
 
       def route_does_params
-        p "hmm"
-        p params
         render_content("got ##{ params["id"] }", "text/text")
       end
 

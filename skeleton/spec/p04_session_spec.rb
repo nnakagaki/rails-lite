@@ -78,6 +78,32 @@ describe Phase4::ControllerBase do
     end
   end
 
+  describe "#flash" do
+    before (:each) { cats_controller.flash[:errors]= "hi" }
+
+    it "stores a value in a session instance" do
+      cats_controller.flash[:errors]= "hi"
+      expect(cats_controller.flash).to be_a(Phase4::Session)
+    end
+
+    it "returns the value stored" do
+      expect(cats_controller.flash[:errors]).to eq("hi")
+    end
+
+    it "persist once through redirect" do
+      cats_controller.redirect_to("url")
+
+      cats_controller.redirect_to("url")
+      expect(cats_controller.flash[:errors]).to eq("hi")
+
+    end
+
+    it "returns the same instance on successive invocations" do
+      first_result = cats_controller.flash
+      expect(cats_controller.flash).to be(first_result)
+    end
+  end
+
   shared_examples_for "storing session data" do
     it "should store the session data" do
       cats_controller.session['test_key'] = 'test_value'

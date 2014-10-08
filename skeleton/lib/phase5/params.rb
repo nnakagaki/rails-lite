@@ -15,11 +15,7 @@ module Phase5
         end
       end
 
-      if req.body.to_s
-        parse_www_encoded_form(req.body.to_s).each do |key, value|
-          @params[key] = value
-        end
-      end
+      parse_www_encoded_form(req.body.to_s)
     end
 
     def [](key)
@@ -40,28 +36,20 @@ module Phase5
     # { "user" => { "address" => { "street" => "main", "zip" => "89436" } } }
     def parse_www_encoded_form(www_encoded_form)
       non_nested = Hash[URI::decode_www_form(www_encoded_form)]
-      result = {}
+
       non_nested.each do |keys, value|
         parsed_keys = parse_key(keys)
-        inner_result = {}
-        parsed_keys.reverse.each do |key|
-          inner_result[key] = value
-          value = {key => value}
+
+        curr_param = @params
+        curr_key = parsed_keys.shift
+
+        until parsed_keys.empty?
+          curr_param = ( curr_param[curr_key] ||= {} )
+          curr_key = parsed_keys.shift
         end
 
-
-
-        if result[parsed_keys.first] && inner_result[parsed_keys.first]
-          p result.keys
-          p parsed_keys.first => inner_result[parsed_keys.first]
-          p "hello"
-          p result.merge(parsed_keys.first => inner_result[parsed_keys.first])
-        else
-          result[parsed_keys.first] = inner_result[parsed_keys.first]
-        end
+        curr_param[curr_key] = value
       end
-      p 'hi'
-      p result
     end
 
     # this should return an array

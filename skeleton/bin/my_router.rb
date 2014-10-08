@@ -3,10 +3,51 @@ require_relative '../lib/phase6/controller_base'
 require_relative '../lib/phase6/router'
 
 
-# http://www.ruby-doc.org/stdlib-2.0/libdoc/webrick/rdoc/WEBrick.html
-# http://www.ruby-doc.org/stdlib-2.0/libdoc/webrick/rdoc/WEBrick/HTTPRequest.html
-# http://www.ruby-doc.org/stdlib-2.0/libdoc/webrick/rdoc/WEBrick/HTTPResponse.html
-# http://www.ruby-doc.org/stdlib-2.0/libdoc/webrick/rdoc/WEBrick/Cookie.html
+class Cat
+  attr_reader :name, :owner
+
+  def self.all
+    @cat ||= []
+  end
+
+  def initialize(params = {})
+    params ||= {}
+    @name, @owner = params["name"], params["owner"]
+  end
+
+  def save
+    return false unless @name.present? && @owner.present?
+
+    Cat.all << self
+    true
+  end
+
+  def inspect
+    { name: name, owner: owner }.inspect
+  end
+end
+
+class CatsController < Phase6::ControllerBase
+  def create
+    @cat = Cat.new(params["cat"])
+    if @cat.save
+      flash["errors"] = "ERRORSSS"
+      redirect_to("/cats")
+    else
+      render :new
+    end
+  end
+
+  def index
+    @cats = Cat.all
+    render :index
+  end
+
+  def new
+    @cat = Cat.new
+    render :new
+  end
+end
 
 $cats = [
   { id: 1, name: "Curie" },
@@ -29,23 +70,10 @@ class StatusesController < Phase6::ControllerBase
   end
 end
 
-class CatsController < Phase6::ControllerBase
-# def index
-#     render_content($cats.to_s, "text/text")
-#   end
-  def index
-    render :index
-  end
-
-  def new
-    @cat = {}
-    render :new
-  end
-end
-
 router = Phase6::Router.new
 router.draw do
   get Regexp.new("^/cats$"), CatsController, :index
+  post Regexp.new("^/cats$"), CatsController, :index
   get Regexp.new("^/cats/new$"), CatsController, :new
   get Regexp.new("^/cats/(?<cat_id>\\d+)/statuses$"), StatusesController, :index
 end

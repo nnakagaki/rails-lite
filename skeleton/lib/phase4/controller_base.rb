@@ -17,7 +17,11 @@ module Phase4
 
     # method exposing a `Session` object
     def session
-      @sesion ||= @session = Session.new(self.req)
+      @session ||= Session.new(self.req)
+    end
+
+    def flash
+      session["reserved_for_flash"]
     end
   end
 end

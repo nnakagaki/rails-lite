@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello</title>
+</head>
+<body>
+<% if flash["errors"] %>
+<%= flash["errors"] %>
+<% end %>
+sfsf
+<%= session.inspect %>
+<%= session["reserved_for_flash"] %>
+
+<%= yield %>
+
+</body>
+</html>
