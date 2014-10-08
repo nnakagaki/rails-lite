@@ -4,8 +4,11 @@ require 'phase3/controller_base'
 describe Phase3::ControllerBase do
   before(:all) do
     class CatsController < Phase3::ControllerBase
+      attr_reader :cats
+
       def index
         @cats = ["GIZMO"]
+        render(:index)
       end
     end
   end
@@ -17,10 +20,11 @@ describe Phase3::ControllerBase do
 
   describe "#render" do
     before(:each) do
-      cats_controller.render(:index)
+      cats_controller.index
     end
 
     it "renders the html of the index view" do
+      puts cats_controller.res.body
       cats_controller.res.body.should include("ALL THE CATS")
       cats_controller.res.body.should include("<h1>")
       cats_controller.res.content_type.should == "text/html"
